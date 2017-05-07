@@ -1158,6 +1158,9 @@
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="styleSheet">
          <string notr="true">border-color: rgb(255, 255, 255);border: 2px solid #8f8f91;</string>
         </property>

@@ -5,6 +5,6 @@
 #define BOARD_HEIGHT 20
 #define BLOCK_SIZE 30
 #define LEVEL_LINES 5
-#define MOVE_DOWN_STEP 5
+#define MOVE_DOWN_STEP 2
 
 #endif // CONSTS_H

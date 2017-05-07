@@ -61,8 +61,6 @@ void GameBoard::restartGame()
 
     clearBoard();
 
-    startNextPiece();
-
     emit updateLines(removedLines);
     emit updateLevel(level);
 
@@ -71,6 +69,8 @@ void GameBoard::restartGame()
 
     gameOver = false;
     runAnimation();
+
+    startNextPiece();
 }
 
 void GameBoard::startGame()
@@ -91,6 +91,10 @@ void GameBoard::startNextPiece()
 
     nextShape = getRandomShape();
     emit updateNextPiece(nextShape);
+
+    timeLine->stop();
+    timeLine->setUpdateInterval(300 / (level + 10) + 1);
+    timeLine->start();
 }
 
 void GameBoard::setShapeProbabilities(int *probabilities)
@@ -137,17 +141,21 @@ void GameBoard::stopAnimation() {
 }
 
 void GameBoard::runAnimation() {
-    timeLine = new QTimeLine(20 / level);
-    connect(timeLine, SIGNAL(finished()), this, SLOT(updateAnimation()));
+    timeLine = new QTimeLine();
+    connect(timeLine, SIGNAL(valueChanged(qreal)), this, SLOT(updateAnimation()));
+    //timeLine->setUpdateInterval(10 / level);
+    timeLine->setLoopCount(0);
 
     timeLine->start();
 }
 
 void GameBoard::updateAnimation() {
-    moveDown();
 
     if (!gameOver)
-        runAnimation();
+    {
+        moveDown();
+
+    }
 }
 
 bool GameBoard::canMoveCell(int x, int y)
@@ -211,21 +219,26 @@ bool GameBoard::moveDown()
         {
             int lx = currentPiece->cells[i].x() / BLOCK_SIZE;
             int ly = currentPiece->cells[i].y() / BLOCK_SIZE;
-            boardCells[lx][ly].setColor(currentPiece->cells[i].getColor());
-            boardCells[lx][ly].setVisible(true);
+            if (ly >= 0 && !boardCells[lx][ly].isVisible())
+            {
+                boardCells[lx][ly].setColor(currentPiece->cells[i].getColor());
+                boardCells[lx][ly].setVisible(true);
+            }
             this->removeItem(&(currentPiece->cells[i]));
         }
 
         delete(currentPiece);
+        currentPiece = nullptr;
 
         checkLines();
 
-        startNextPiece();
-
         checkGameOver();
-    }
 
-    currentPiece->addY(MOVE_DOWN_STEP);
+        if (!gameOver)
+            startNextPiece();
+    }
+    else
+        currentPiece->addY(MOVE_DOWN_STEP);
 
     return canMove;
 }

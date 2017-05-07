@@ -8,26 +8,21 @@
 #include <QPen>
 #include <QGradient>
 #include <QDebug>
+#include <consts.h>
 
 class Cell : public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
-    static const int size = 30;
+    static const int size = BLOCK_SIZE;
 public:
-    Cell(QObject *parent = 0);
-    Cell(int x, int y, QColor color = Qt::red, QObject *parent = 0);
+    Cell(int x = 0, int y = 0, QColor color = Qt::red, QObject *parent = 0);
 
     void setColor(QColor color);
     QColor getColor() const { return color; }
 
-    int getX() const { return x; }
-    int getY() const { return y; }
-
     void setPosition(int x, int y);
 
 private:
-    int x;
-    int y;
     QColor color;
     QBrush brush;
     QPen pen;

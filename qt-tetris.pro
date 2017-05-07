@@ -15,11 +15,17 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
         gameboard.cpp \
-    cell.cpp
+    cell.cpp \
+    piece.cpp \
+    settingswindow.cpp
 
 HEADERS  += \
     mainwindow.h \
     gameboard.h \
-    cell.h
+    cell.h \
+    piece.h \
+    consts.h \
+    settingswindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    settingswindow.ui

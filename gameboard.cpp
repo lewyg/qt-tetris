@@ -105,6 +105,9 @@ void GameBoard::setShapeProbabilities(int *probabilities)
 }
 
 void GameBoard::keyPressed(int key) {
+    if (gameOver || paused)
+        return;
+
     switch (key) {
         case Qt::Key_Up:
             rotateLeft();

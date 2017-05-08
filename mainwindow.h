@@ -5,6 +5,8 @@
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <QKeyEvent>
+#include <QIcon>
+#include <QDir>
 #include <gameboard.h>
 #include <cell.h>
 #include <piece.h>

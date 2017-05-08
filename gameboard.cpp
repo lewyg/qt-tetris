@@ -91,10 +91,6 @@ void GameBoard::startNextPiece()
 
     nextShape = getRandomShape();
     emit updateNextPiece(nextShape);
-
-    timeLine->stop();
-    timeLine->setUpdateInterval(300 / (level + 10) + 1);
-    timeLine->start();
 }
 
 void GameBoard::setShapeProbabilities(int *probabilities)
@@ -146,7 +142,7 @@ void GameBoard::stopAnimation() {
 void GameBoard::runAnimation() {
     timeLine = new QTimeLine();
     connect(timeLine, SIGNAL(valueChanged(qreal)), this, SLOT(updateAnimation()));
-    //timeLine->setUpdateInterval(10 / level);
+    timeLine->setUpdateInterval(300 / (level + 10) + 1);
     timeLine->setLoopCount(0);
 
     timeLine->start();
@@ -233,12 +229,12 @@ bool GameBoard::moveDown()
         delete(currentPiece);
         currentPiece = nullptr;
 
+        if (!gameOver)
+            startNextPiece();
+
         checkLines();
 
         checkGameOver();
-
-        if (!gameOver)
-            startNextPiece();
     }
     else
         currentPiece->addY(MOVE_DOWN_STEP);
@@ -258,6 +254,11 @@ void GameBoard::checkLevel()
     if (removedLines % LEVEL_LINES == 0)
     {
         level++;
+
+        timeLine->stop();
+        timeLine->setUpdateInterval(300 / (level + 10) + 1);
+        timeLine->start();
+
         emit updateLevel(level);
     }
 }

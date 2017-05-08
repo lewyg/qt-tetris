@@ -15,6 +15,7 @@ class GameBoard : public QGraphicsScene
     Q_OBJECT
 public:
     GameBoard(QObject *parent = 0);
+    ~GameBoard();
     int *shapeProbabilities;
     bool paused;
 
@@ -42,6 +43,7 @@ private:
     PieceShape getRandomShape();
 
     bool gameOver;
+    bool landing;
 
     int removedLines;
     int level;

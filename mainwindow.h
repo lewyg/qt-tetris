@@ -48,6 +48,8 @@ protected:
 private:
     Ui::MainWindow *ui;
     GameBoard *board;
+
+    void fitSceneToView();
 };
 
 #endif // MAINWINDOW_H

@@ -1,20 +1,5 @@
 #include "gameboard.h"
 
-
-PieceShape GameBoard::getRandomShape()
-{
-    int rand = qrand() % 100;
-    int sum = 0;
-    for (int i = 0; i < 7; ++i)
-    {
-        sum += shapeProbabilities[i];
-        if (rand < sum)
-            return PieceShape(i);
-    }
-
-    return PieceShape::ZShape;
-}
-
 GameBoard::GameBoard(QObject * parent) : QGraphicsScene(parent)
 {
     removedLines = 0;
@@ -29,6 +14,21 @@ GameBoard::GameBoard(QObject * parent) : QGraphicsScene(parent)
             this->addItem(&boardCells[i][j]);
         }
     }
+    for (int i = 0; i < BOARD_WIDTH; i++)
+    {
+        Cell *cell = new Cell(i, -1);
+        this->addItem(cell);
+        cell->setVisible(false);
+    }
+
+    QPen pen(QColor(143, 143, 145), 2);
+    (this->addLine(-2, -BLOCK_SIZE,
+                   -2, BOARD_HEIGHT * BLOCK_SIZE + 2, pen))->setVisible(true);
+    (this->addLine(BOARD_WIDTH * BLOCK_SIZE + 2, -BLOCK_SIZE,
+                   BOARD_WIDTH * BLOCK_SIZE + 2, BOARD_HEIGHT * BLOCK_SIZE + 2, pen))->setVisible(true);
+    (this->addLine(-2, BOARD_HEIGHT * BLOCK_SIZE + 2,
+                   BOARD_WIDTH * BLOCK_SIZE + 2, BOARD_HEIGHT * BLOCK_SIZE + 2, pen))->setVisible(true);
+
     currentPiece = nullptr;
     timeLine = nullptr;
     gameOver = true;
@@ -37,6 +37,25 @@ GameBoard::GameBoard(QObject * parent) : QGraphicsScene(parent)
     shapeProbabilities = new int[7]{
         14, 14, 14, 14, 14, 15, 15
     };
+}
+
+GameBoard::~GameBoard()
+{
+    this->clear();
+}
+
+PieceShape GameBoard::getRandomShape()
+{
+    int rand = qrand() % 100;
+    int sum = 0;
+    for (int i = 0; i < 7; ++i)
+    {
+        sum += shapeProbabilities[i];
+        if (rand < sum)
+            return PieceShape(i);
+    }
+
+    return PieceShape::ZShape;
 }
 
 void GameBoard::clearBoard()
@@ -91,6 +110,11 @@ void GameBoard::startNextPiece()
 
     nextShape = getRandomShape();
     emit updateNextPiece(nextShape);
+
+    timeLine->stop();
+    timeLine->setUpdateInterval(300 / (level + 10) + 1);
+    timeLine->resume();
+    landing = false;
 }
 
 void GameBoard::setShapeProbabilities(int *probabilities)
@@ -142,7 +166,6 @@ void GameBoard::stopAnimation() {
 void GameBoard::runAnimation() {
     timeLine = new QTimeLine();
     connect(timeLine, SIGNAL(valueChanged(qreal)), this, SLOT(updateAnimation()));
-    timeLine->setUpdateInterval(300 / (level + 10) + 1);
     timeLine->setLoopCount(0);
 
     timeLine->start();
@@ -192,8 +215,18 @@ void GameBoard::moveLeft() {
 
 void GameBoard::fallDown()
 {
-    if(!gameOver)
-        while (moveDown()) {}
+    if (!landing)
+    {
+        timeLine->stop();
+        timeLine->setUpdateInterval(1);
+        timeLine->resume();
+        landing = true;
+    }
+    else
+    {
+        if(!gameOver)
+            while (moveDown()) {}
+    }
 }
 
 bool GameBoard::moveDown()
@@ -246,7 +279,10 @@ void GameBoard::checkGameOver()
 {
     for (int i = 0; i < BOARD_WIDTH; ++i)
         if (boardCells[i][0].isVisible())
+        {
             gameOver = true;
+            timeLine->stop();
+        }
 }
 
 void GameBoard::checkLevel()
@@ -254,11 +290,6 @@ void GameBoard::checkLevel()
     if (removedLines % LEVEL_LINES == 0)
     {
         level++;
-
-        timeLine->stop();
-        timeLine->setUpdateInterval(300 / (level + 10) + 1);
-        timeLine->start();
-
         emit updateLevel(level);
     }
 }

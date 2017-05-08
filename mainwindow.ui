@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>418</width>
-    <height>550</height>
+    <height>524</height>
    </rect>
   </property>
   <property name="cursor">
@@ -39,7 +39,7 @@
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="styleSheet">
-       <string notr="true">border-color: rgb(255, 255, 255);border: 2px solid #8f8f91;</string>
+       <string notr="true"/>
       </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>

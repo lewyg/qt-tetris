@@ -81,18 +81,23 @@ void MainWindow::on_btSettings_clicked() {
     settings->show();
 }
 
+void MainWindow::fitSceneToView()
+{
+   ui->gvBoard->fitInView(board->sceneRect(), Qt::KeepAspectRatio);
+}
+
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QMainWindow::resizeEvent(event);
 
-    ui->gvBoard->fitInView(board->sceneRect());
+    fitSceneToView();
 }
 
 void MainWindow::showEvent(QShowEvent *event)
 {
     QMainWindow::showEvent(event);
 
-    ui->gvBoard->fitInView(board->sceneRect());
+    fitSceneToView();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
